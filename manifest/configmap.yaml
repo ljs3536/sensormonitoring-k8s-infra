@@ -1,0 +1,16 @@
+# configmap.yaml (기존 sensor-config 수정)
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sensor-config
+data:
+  # --- 여기에 로컬 .env 에 있던 내용들을 key: value 로 다 넣습니다 ---
+  INFLUXDB_ORG: "sensor_hq"
+  INFLUXDB_BUCKET: "sensor_data"
+  INFLUXDB_URL: "http://influxdb-svc:8086"
+  MQTT_BROKER: "mqtt-svc"
+  MQTT_PORT: "1883"
+  # Backend가 바라볼 AI 주소 (8002번 포트 반영)
+  AI_URL: "http://sensor-ai-svc:8002"
+  # AI가 바라볼 Backend 주소 (8001번 포트 반영)
+  BACKEND_URL: "http://backend-svc:8001"

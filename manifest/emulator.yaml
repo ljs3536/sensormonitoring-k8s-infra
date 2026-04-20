@@ -1,0 +1,44 @@
+# 07-emulator.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-emulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-emulator
+  template:
+    metadata:
+      labels:
+        app: sensor-emulator
+    spec:
+      nodeSelector:
+        node-role: edge
+      containers:
+        - name: sensor-emulator
+          image: sensor-emulator:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - configMapRef:
+                name: sensor-config
+            # 👇 이 두 줄을 추가해 주세요!
+            - secretRef:
+                name: sensor-secret
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "200m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: emulator-svc
+spec:
+  selector:
+    app: sensor-emulator
+  ports:
+    - port: 8000
+      targetPort: 8000

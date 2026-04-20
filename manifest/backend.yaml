@@ -1,0 +1,43 @@
+# 04-backend.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-backend
+  template:
+    metadata:
+      labels:
+        app: sensor-backend
+    spec:
+      nodeSelector:
+        node-role: app
+      containers:
+        - name: sensor-backend
+          image: sensor-backend:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8001 # 🌟 포트 수정
+          envFrom: # 🌟 이 부분이 쿠버네티스가 .env 파일을 주입해주는 마법입니다.
+            - configMapRef:
+                name: sensor-config
+            - secretRef:
+                name: sensor-secret
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-svc
+spec:
+  selector:
+    app: sensor-backend
+  ports:
+    - port: 8001 # 🌟 포트 수정
+      targetPort: 8001

@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-collector
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-collector
+  template:
+    metadata:
+      labels:
+        app: sensor-collector
+    spec:
+      nodeSelector:
+        node-role: edge # 🌟 Edge 노드 지정
+      containers:
+        - name: sensor-collector
+          image: sensor-collector:v1
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: sensor-config
+            - secretRef:
+                name: sensor-secret
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "300m"

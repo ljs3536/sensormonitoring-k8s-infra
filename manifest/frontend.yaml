@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sensor-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensor-frontend
+  template:
+    metadata:
+      labels:
+        app: sensor-frontend
+    spec:
+      nodeSelector:
+        node-role: app # 🌟 백엔드와 동일하게 App 노드에 배치
+      containers:
+        - name: sensor-frontend
+          image: sensor-frontend:v1
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80 # Nginx 등을 사용한 기본 웹 포트 가정
+          resources:
+            limits:
+              memory: "512Mi"
+              cpu: "300m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-svc
+spec:
+  selector:
+    app: sensor-frontend
+  ports:
+    - port: 80 # Ingress(문지기)가 80으로 요청을 받아서
+      targetPort: 3000 # 컨테이너의 3000번 포트로 전달합니다. (Next.js)
+---
+# 🌟 맥북 크롬에서 localhost:8080 으로 접속하게 해주는 라우팅 설정
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sensor-ingress
+  annotations:
+    # 경로 끝에 /를 붙이지 않아도 알아서 처리해주는 설정 (Traefik용)
+    traefik.ingress.kubernetes.io/router.middlewares: default-stripprefix@kubernetescrd
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend-svc
+                port:
+                  number: 80
+          - path: /emulator
+            pathType: Prefix
+            backend:
+              service:
+                name: emulator-svc
+                port:
+                  number: 8000
