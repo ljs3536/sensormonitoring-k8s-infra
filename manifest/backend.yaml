@@ -21,6 +21,7 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8001 # 🌟 포트 수정
+              hostPort: 8001
           envFrom: # 🌟 이 부분이 쿠버네티스가 .env 파일을 주입해주는 마법입니다.
             - configMapRef:
                 name: sensor-config
