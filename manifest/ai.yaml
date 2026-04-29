@@ -21,12 +21,18 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 8002
+          env:
+            - name: MODEL_DIR # 파이썬 코드에서 읽을 환경 변수
+              value: "/app/models"
           envFrom:
             - configMapRef:
                 name: sensor-config
-            # 👇 AI 파드에도 이 두 줄을 추가해 주세요!
             - secretRef:
                 name: sensor-secret
+          # 🌟 컨테이너 내부의 폴더와 볼륨을 연결
+          volumeMounts:
+            - name: model-storage
+              mountPath: /app/models
           resources:
             limits:
               memory: "4Gi"
@@ -42,3 +48,16 @@ spec:
   ports:
     - port: 8002 # 🌟 포트 수정
       targetPort: 8002
+---
+# 🌟 1. AI 모델을 저장할 가상 하드디스크(PVC) 생성
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: ai-model-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi # 모델 크기에 따라 넉넉하게 잡아주세요
+---
