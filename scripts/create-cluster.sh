@@ -21,12 +21,12 @@ k3d image import sensor-frontend:v1 sensor-backend:v1 sensor-ai:v1 sensor-emulat
 
 # 5. 기존에 만들어둔 YAML 파일들 순서대로 싹 다 배포!
 kubectl apply -f sensor-secrets.yaml
-kubectl apply -f 00-configmap.yaml
-kubectl apply -f 01-mosquitto.yaml
-kubectl apply -f 02-influxdb.yaml
-kubectl apply -f 03-mariadb.yaml
-kubectl apply -f 04-backend.yaml
-kubectl apply -f 05-frontend.yaml
-kubectl apply -f 06-collector.yaml
-kubectl apply -f 07-emulator.yaml
-kubectl apply -f 08-ai.yaml
+kubectl apply -f configmap.yaml
+kubectl apply -f mosquitto.yaml
+kubectl apply -f influxdb.yaml
+kubectl apply -f mariadb.yaml
+kubectl apply -f backend.yaml
+kubectl apply -f frontend.yaml
+kubectl apply -f collector.yaml
+kubectl apply -f emulator.yaml
+kubectl apply -f ai.yaml
