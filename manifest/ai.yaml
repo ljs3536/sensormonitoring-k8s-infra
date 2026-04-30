@@ -31,16 +31,29 @@ spec:
                 name: sensor-secret
           # 🌟 컨테이너 내부의 폴더와 볼륨을 연결
           volumeMounts:
-            - name: model-storage
+            - name: model-ram-storage
+              mountPath: /app/temp_models
+            - name: model-disk-storage
               mountPath: /app/models
           resources:
+            requests:
+              cpu: "1000m"
+              memory: "1Gi"
             limits:
+              cpu: "4000m"
               memory: "4Gi"
-              cpu: "2000m"
       volumes:
-        - name: model-storage
+        - name: model-ram-storage
+          emptyDir:
+            medium: Memory
+        - name: model-disk-storage
           persistentVolumeClaim:
             claimName: ai-model-pvc
+      env:
+        - name: MODEL_DIR
+          value: "/app/models"
+        - name: TEMP_MODEL_DIR
+          value: "/app/temp_models"
 ---
 apiVersion: v1
 kind: Service
